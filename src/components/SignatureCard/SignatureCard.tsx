@@ -3,6 +3,7 @@ import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import Lottie from 'lottie-react-web';
 import { useEffect, useState, useRef } from 'react';
+import styleds from "styled-components";
 
 import Web3 from "web3";
 import HashinkDropABI from "./HashinkDrop.json";
@@ -64,6 +65,16 @@ const StyledBox = styled(Center)`
     filter: blur(20px);
   }
 `;
+
+const BuyButton = styleds.button`
+  border: 1px solid black;
+  background-color: black;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 50px;
+  padding-right: 50px;
+  margin-top: 120px;
+`
 
 export default function SignatureCard() {
   const sigContainer = useRef(null);
@@ -145,17 +156,10 @@ export default function SignatureCard() {
           /> */}
           <Img src="/white-autograph.png" alt="white-autograph" />
         </StyledBox>
-        <button onClick={()=> buy_nft()} 
-                Style="border: 1px solid black;
-                      background-color: black;
-                      padding-top: 10px;
-                      padding-bottom: 10px;
-                      padding-left: 50px;
-                      padding-right: 50px;
-                      margin-top: 120px;"
-                      >
-        Purchase
-      </button>
+        
+        <BuyButton onClick={()=> buy_nft()} >
+          Purchase
+        </BuyButton>
 
          <br />
          <br />
