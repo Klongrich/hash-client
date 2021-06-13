@@ -73,7 +73,8 @@ const BuyButton = styleds.button`
   padding-bottom: 10px;
   padding-left: 50px;
   padding-right: 50px;
-  margin-top: 120px;
+  margin-bottom: 120px;
+  margin-top: 30px;
 `
 
 export default function SignatureCard() {
@@ -119,7 +120,7 @@ export default function SignatureCard() {
       const Contract = new web3.eth.Contract(HashinkDropABI.abi, HashinkDropContractAddress);
   
       await Contract.methods.dropmeta(dropID).call(function (error, res) {
-          console.log(res);
+           console.log(res);
           setAmountMinted(res.total_amount_minted);
       })
     }
