@@ -10,7 +10,7 @@ import HashinkDropABI from "./HashinkDrop.json";
 
 const HashinkDropContractAddress = "0xD4c0E103B69A6aDf0F9D1737Ccd8C1D66CCE1D6F";
 const dropID = "0x9366abecab1d00a1c935e01755258552868321de443bb966563b0afff3b912e0";
-const tokenID = 100; //start at 100 end at 120
+const tokenID = 101; //start at 100 end at 120
 const price = 14170000000000000;
 
 // 0.01417004048 - $35 @ $2470
@@ -88,7 +88,9 @@ export default function SignatureCard() {
 
     const Contract = await new web3.eth.Contract(HashinkDropABI.abi, HashinkDropContractAddress);
 
-    await Contract.methods.purchase_nft(dropID, tokenID + amountMinted)
+    const newTokenId = Number(amountMinted) + tokenID;
+
+    await Contract.methods.purchase_nft(dropID, newTokenId)
     .send({from: Ethaccounts[0], value: price })
     .once("receipt", (res) => {
         console.log(res);
