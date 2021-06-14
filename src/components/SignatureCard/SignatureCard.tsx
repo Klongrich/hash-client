@@ -73,22 +73,22 @@ const BuyButton = styleds.button`
   padding-bottom: 10px;
   padding-left: 50px;
   padding-right: 50px;
+
   margin-bottom: 120px;
   margin-top: 30px;
+
 `
 
-export default function SignatureCard() {
+export default function SignatureCard( {web3} ) {
   const sigContainer = useRef(null);
   const testContainer = useRef(null);
 
   const [amountMinted, setAmountMinted] = useState(0);
 
   async function buy_nft() {
-    const web3 = window.web3;
     const Ethaccounts = await web3.eth.getAccounts();
-
     const Contract = await new web3.eth.Contract(HashinkDropABI.abi, HashinkDropContractAddress);
-
+    
     const newTokenId = Number(amountMinted) + tokenID;
 
     await Contract.methods.purchase_nft(dropID, newTokenId)
@@ -99,24 +99,8 @@ export default function SignatureCard() {
   }
 
   useEffect(() => {
+    async function check_drop_meta(){   
 
-    async function loadWeb3() {
-      if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum);
-        await window.ethereum.enable();
-        return true;
-      } else if (window.web3) {
-        window.web3 = new Web3(window.web3.currentProvider);
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    loadWeb3();
-
-    async function check_drop_meta(){      
-      const web3 = window.web3;
       const Contract = new web3.eth.Contract(HashinkDropABI.abi, HashinkDropContractAddress);
   
       await Contract.methods.dropmeta(dropID).call(function (error, res) {
@@ -124,8 +108,9 @@ export default function SignatureCard() {
           setAmountMinted(res.total_amount_minted);
       })
     }
-
-    check_drop_meta();
+    if (web3) {
+      check_drop_meta();
+    }
   },[]);
   return (
     <Box

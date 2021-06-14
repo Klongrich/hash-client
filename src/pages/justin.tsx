@@ -10,6 +10,9 @@ import SignatureCard from '../components/SignatureCard';
 import { useEffect, useState } from 'react';
 
 import Web3 from "web3";
+import Web3Modal from 'web3modal';
+import WalletConnectProvider from '@walletconnect/web3-provider';
+
 import HashinkDropABI from "../components/SignatureCard/HashinkDrop.json";
 
 const HashinkDropContractAddress = "0xD4c0E103B69A6aDf0F9D1737Ccd8C1D66CCE1D6F";
@@ -45,12 +48,30 @@ const Box3 = styled(Box1)`
   animation-duration: 5s;
 `;
 
+const providerOptions = {
+  walletconnect: {
+    package: WalletConnectProvider, // required
+    options: {
+      infuraId: '43b86485d3164682b5d703fd1d39fe1c' // required
+    }
+  }
+}
+
 export default function App() {
 
   const [totalAmount, setTotalAmount] = useState(0);
   const [amountMinted, setAmountMinted] = useState(0);
 
   const [amountRaised, setAmountRaised] = useState(0);
+
+  const [provider, setProvider] = useState(null);
+  const [web3, setWeb3] = useState(null);
+
+  const web3Modal = new Web3Modal({
+    network: 'rinkeby', // optional
+    cacheProvider: true, // optional
+    providerOptions // required
+  });
 
   const signer = {
     timeLeft: '05/13/2021 23:00:00',
@@ -66,43 +87,31 @@ export default function App() {
   });
 
 
-
-  useEffect(() => {
-    
+  useEffect(() => {    
     async function loadWeb3() {
-      if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum);
-        await window.ethereum.enable();
-        return true;
-      } else if (window.web3) {
-        window.web3 = new Web3(window.web3.currentProvider);
-        return true;
-      } else {
-        return false;
-      }
-    }
-    
-    loadWeb3();
 
-    async function check_drop_meta(){
-            
-      const web3 = window.web3;
-      const Ethaccounts = await web3.eth.getAccounts();
-  
-      const Contract = new web3.eth.Contract(HashinkDropABI.abi, HashinkDropContractAddress);
-  
-      await Contract.methods.dropmeta(dropID).call(function (error, res) {
-          console.log(res);
+      const provider = await web3Modal.connect();
+      const web3 = await new Web3(provider);
 
+      setProvider(provider);
+      setWeb3(web3);
+
+      if (web3.eth) {
+
+        const Contract = new web3.eth.Contract(HashinkDropABI.abi, HashinkDropContractAddress);
+  
+        await Contract.methods.dropmeta(dropID).call(function (error, res) {
           setTotalAmount(res.total_amount_aviable);
           setAmountMinted(res.total_amount_minted);
 
           // have to parse this so that price comes in correctly
           setAmountRaised(res.pirce * res.total_amount_minted);
-      })
+        })
+      }
     }
-    check_drop_meta();
-  })
+
+    loadWeb3();  
+  }, [])
 
   return (
     <>
@@ -130,7 +139,7 @@ export default function App() {
           zIndex: 0,
         }}
       >
-        <SignatureCard />
+        <SignatureCard web3={web3} />
         <Box
           position="absolute"
           zIndex={2}
