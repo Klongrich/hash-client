@@ -10,6 +10,10 @@ import SignatureCard from '../components/SignatureCard';
 import { useEffect, useState } from 'react';
 
 import Web3 from "web3";
+import { AbiItem } from 'web3-utils';
+
+import { Contract } from 'web3-eth-contract';
+
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 
@@ -96,9 +100,9 @@ export default function App() {
       setProvider(provider);
       setWeb3(web3);
 
-      if (web3.eth) {
+      if (web3) {
 
-        const Contract = new web3.eth.Contract(HashinkDropABI.abi, HashinkDropContractAddress);
+      const Contract = new web3.eth.Contract(HashinkDropABI.abi as AbiItem[], HashinkDropContractAddress);
   
         await Contract.methods.dropmeta(dropID).call(function (error, res) {
           setTotalAmount(res.total_amount_aviable);
